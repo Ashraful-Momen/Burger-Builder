@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/Burger-Builder/static/css/main.609be1e6.css",
+    "main.js": "/Burger-Builder/static/js/main.0f75c5c1.js",
+    "static/js/787.9091863a.chunk.js": "/Burger-Builder/static/js/787.9091863a.chunk.js",
+    "static/media/salat.jpg": "/Burger-Builder/static/media/salat.b7d5b580ec4f2bdb2e02.jpg",
+    "static/media/meet.jpg": "/Burger-Builder/static/media/meet.a7d69f8cc39338ee83e6.jpg",
+    "static/media/cheese.jpg": "/Burger-Builder/static/media/cheese.7bea76c9c8f25d1213c0.jpg",
+    "static/media/breadTop.jpg": "/Burger-Builder/static/media/breadTop.d81fe101c7756ca46b2d.jpg",
+    "static/media/breadBottom.jpg": "/Burger-Builder/static/media/breadBottom.c3ff1dea0a0e01278047.jpg",
+    "static/media/brandLogo2.png": "/Burger-Builder/static/media/brandLogo2.0462ac123780d3aaa59f.png",
+    "index.html": "/Burger-Builder/index.html",
+    "main.609be1e6.css.map": "/Burger-Builder/static/css/main.609be1e6.css.map",
+    "main.0f75c5c1.js.map": "/Burger-Builder/static/js/main.0f75c5c1.js.map",
+    "787.9091863a.chunk.js.map": "/Burger-Builder/static/js/787.9091863a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.609be1e6.css",
+    "static/js/main.0f75c5c1.js"
+  ]
+}
