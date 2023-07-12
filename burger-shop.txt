@@ -1,0 +1,2874 @@
+------------------------------------------------Authentications--------------------------------------------------------------------------------
+---------------------------------------------1 Creating the Auth Form using Formik-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+>>> npm install formik --save ;
+and add route Auth in Main.js
+--------------------------------------------------------------------------------------------------------------------------------------
+Main.js=>
+-----------
+import React from "react";
+import Header from "./Header/Header.js";
+import BurgerBuilder from "./BurgerBuilder/BurgerBuilder";
+import { Routes, Route, Link ,withRouter} from "react-router-dom";
+import Order from "./Order/Order.js";
+import CheckOut from "./Order/CheckOut/CheckOut.js";
+import Auth from "./Auth/Auth.js";
+
+const Main = (props) => {
+  return (
+    <div>
+      <Header />
+      <div className="container">
+        <Routes>
+          <Route path="/" element={<BurgerBuilder />}></Route>
+          <Route path="/order" element={<Order />}></Route>
+          <Route path="/checkout" element={<CheckOut />} ></Route>
+          <Route path="/auth" element={<Auth/>}> </Route>
+          {/* <Route path="/checkout" component={CheckOut} /> */}
+        </Routes>
+      </div>
+    </div>
+  );
+};
+
+export default Main;
+---------------------------
+Header.js=>
+---------------------------
+import React from "react";
+import { Nav, Navbar, NavbarBrand,  NavItem } from "reactstrap";
+import "./Header.css";
+import {NavLink} from 'react-router-dom'
+import Logo2 from "../../assets/brandLogo2.png"
+
+const Header = () => {
+	return (
+		<div className="Navigation">
+			<Navbar style={{ backgroundColor: "#e21b70", height: "70px" }} className="mx-auto">
+				<NavbarBrand className="Brand ms-md-5" href="/" >
+					
+                    <img src={Logo2} alt="BrandLogo" style={{height:"50px", width:"50px" , borderRadius:"50%",}}/>
+				</NavbarBrand>
+				<Nav className="me-md-5">
+					<NavItem className="mx-2">
+						<NavLink to="/" className="NavLink">BurgerBuilder</NavLink>
+					</NavItem>
+					<NavItem className="mx-3">
+						<NavLink to="/order" className="NavLink">Orders</NavLink>
+					</NavItem>
+					<NavItem className="mx-3">
+						<NavLink to="/auth" className="NavLink">LogIn</NavLink>
+					</NavItem>
+				</Nav>
+			</Navbar>
+		</div>
+	);
+};
+
+export default Header;
+
+---------------------------------------
+Auth.js=> to render form component <Formik> {()=>(<div> <form></form></div>)}</Formik>
+---------------------------
+import React, { Component } from "react";
+import { Formik } from "formik";
+
+class Auth extends Component {
+	
+
+	render() {
+		return (
+			<div>
+				<Formik
+					initialValues={{
+						email: "",
+						passWord: "",
+						confirmPassword: "",
+					}}
+					onSubmit={(values) => {
+						console.log(values);
+					}}
+				>
+					{({values, handleChange, handleSubmit}) => ( // here => values, handleChange, handleSubmit is a default property of Formik.
+						<div>
+							<form onSubmit={handleSubmit}>
+								<input
+									className="form-control"
+									name="email"
+									placeholder="Type Your Email"
+                                    value={values.email}
+                                    onChange={handleChange}
+								/>
+								<br />
+								<input
+									className="form-control"
+									name="passWord"
+									placeholder="RePassword"
+                                    value={values.passWord}
+                                    onChange={handleChange}
+								/>
+								<br />
+                                <input
+									className="form-control"
+									name="confirmPassword"
+									placeholder="RePassword"
+                                    value={values.confirmPassword}
+                                    onChange={handleChange}
+								/>
+								
+								<br />
+								<button type="submit" className="btn btn-success">
+									SingUp
+								</button>
+							</form>
+						</div>
+					)}
+				</Formik>
+			</div>
+		);
+	}
+}
+
+export default Auth;
+
+
+-------------------------------------------------------2 Adding Validation-------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Auth.js=>
+---------------------------
+import React, { Component } from "react";
+import { Formik } from "formik";
+
+class Auth extends Component {
+	
+
+	render() {
+		return (
+			<div>
+				<Formik
+					initialValues={{
+						email: "",
+						passWord: "",
+						confirmPassword: "",
+					}}
+					onSubmit={(values) => {
+						console.log(values);
+					}}
+                    validate={(values)=>{
+                        const errors={};
+
+                        if(!values.email){
+                            errors.email='Required!'; // email input field empty
+
+                        }
+                        else if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(values.email)){
+                            errors.email='Invalid Email!'
+                        }
+
+                        if(!values.passWord){
+                            errors.passWord="Required!"
+                        }
+                        else if(values.passWord.length < 4){
+                            errors.passWord="Password Should be at least 4 Characters!"
+                        }
+                        if(!values.confirmPassword){
+                            errors.confirmPassword="Requried!";
+                        }
+                        else if(values.confirmPassword !== values.passWord){
+                            errors.confirmPassword="Password Should be matched!"
+                        }
+                        console.log(`Errors =>`,errors);
+                        return errors;
+                    }}
+				>
+					{({values, handleChange, handleSubmit, errors}) => (
+						<div
+                        style={{
+                            border:"1px solid",
+                            padding:"15px",
+                            borderRadius:"5px",
+                        }}
+                        >
+							<form onSubmit={handleSubmit}>
+								<input
+									className="form-control"
+									name="email"
+									placeholder="Type Your Email"
+                                    value={values.email}
+                                    onChange={handleChange}
+								/>
+                                <span style={{color:"red"}}>{errors.email}</span>
+								<br />
+								<input
+									className="form-control"
+									name="passWord"
+									placeholder="Password"
+                                    value={values.passWord}
+                                    onChange={handleChange}
+								/>
+                                <span style={{color:"red"}}>{ errors.passWord}</span>
+								<br />
+                                <input
+									className="form-control"
+									name="confirmPassword"
+									placeholder="RePassword"
+                                    value={values.confirmPassword}
+                                    onChange={handleChange}
+								/>
+                                <span style={{color:"red"}}>{errors.confirmPassword}</span>
+                                
+								
+								<br />
+								<button type="submit" className="btn btn-success">
+									SingUp
+								</button>
+							</form>
+						</div>
+					)}
+				</Formik>
+			</div>
+		);
+	}
+}
+
+export default Auth;
+---------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------3 Switching Between Sign Up and Login---------------------------------------------------------------------------
+Auth.js=>
+---------------------------
+import React, { Component } from "react";
+import { Formik } from "formik";
+
+class Auth extends Component {
+	state = {
+		mode: "Sing Up",
+	};
+	switchModeHandler = () => {
+		this.setState({
+			mode: this.state.mode === "Sing Up" ? "LogIn" : "Sing Up",
+		});
+	};
+	render() {
+		return (
+			<div>
+				<Formik
+					initialValues={{
+						email: "",
+						passWord: "",
+						confirmPassword: "",
+					}}
+					onSubmit={(values) => {
+						console.log(values);
+					}}
+					validate={(values) => {
+						const errors = {};
+
+						if (!values.email) {
+							errors.email = "Required!"; // email input field empty
+						} else if (
+							!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(
+								values.email,
+							)
+						) {
+							errors.email = "Invalid Email!";
+						}
+
+						if (!values.passWord) {
+							errors.passWord = "Required!";
+						} else if (values.passWord.length < 4) {
+							errors.passWord = "Password Should be at least 4 Characters!";
+						}
+                        
+						if (this.state.mode === "Sing Up") {
+							if (!values.confirmPassword) {
+								errors.confirmPassword = "Requried!";
+							} else if (values.confirmPassword !== values.passWord) {
+								errors.confirmPassword = "Password Should be matched!";
+							}
+						}
+
+						// console.log(`Errors =>`, errors);
+						return errors;
+					}}
+				>
+					{({ values, handleChange, handleSubmit, errors }) => (
+						<div
+							style={{
+								border: "1px solid",
+								padding: "15px",
+								borderRadius: "5px",
+							}}
+						>
+							<button
+								style={{
+									backgroundColor: "#D70F64",
+									color: "white",
+									width: "100%",
+								}}
+								className="btn btn-lg"
+								onClick={this.switchModeHandler}
+							>
+								Switch To {this.state.mode === "Sing Up" ? "LogIn" : "Sing Up"}{" "}
+							</button>
+							<br />
+							<br />
+							<form onSubmit={handleSubmit}>
+								<input
+									className="form-control"
+									name="email"
+									placeholder="Type Your Email"
+									value={values.email}
+									onChange={handleChange}
+								/>
+								<span style={{ color: "red" }}>{errors.email}</span>
+								<br />
+								<input
+									className="form-control"
+									name="passWord"
+									placeholder="Password"
+									value={values.passWord}
+									onChange={handleChange}
+								/>
+								<span style={{ color: "red" }}>{errors.passWord}</span>
+								<br />
+								{this.state.mode === "Sing Up" ? (
+									<div>
+										{" "}
+										<input
+											className="form-control"
+											name="confirmPassword"
+											placeholder="RePassword"
+											value={values.confirmPassword}
+											onChange={handleChange}
+										/>
+										<span style={{ color: "red" }}>
+											{errors.confirmPassword}
+										</span>
+										<br />
+									</div>
+								) : null}
+								<button type="submit" className="btn btn-success">
+									{this.state.mode === "Sing Up" ? "Sing Up" : "LogIn"}
+								</button>
+							</form>
+						</div>
+					)}
+				</Formik>
+			</div>
+		);
+	}
+}
+
+export default Auth;
+
+---------------------------
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------4 Authentication through Firebase-------------------------------------------------------------------------------
+actionType.js=>
+---------------------------
+export const AUTH_SUCCESS = "AUTH_SUCCESS";
+export const AUTH_FAILED = "AUTH_FAILED";
+export const AUTH_LOAD = "AUTH_LOAD";
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
+
+---------------------------
+Auth.js=>
+---------------------------
+import React, { Component } from "react";
+import { Formik } from "formik";
+import { auth } from "../../redux/authActionCreators";
+import { connect } from "react-redux";
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    auth: (email, password, mode) => dispatch(auth(email, password, mode)),
+  };
+};
+
+class Auth extends Component {
+  state = {
+    mode: "Sing Up",
+  };
+
+  switchModeHandler = () => {
+    this.setState((prevState) => ({
+      mode: prevState.mode === "Sing Up" ? "LogIn" : "Sing Up",
+    }));
+  };
+
+  render() {
+    return (
+      <div>
+        <Formik
+          initialValues={{
+            email: "",
+            password: "",
+            confirmPassword: "",
+          }}
+          onSubmit={(values) => {
+            this.props.auth(values.email, values.password, this.state.mode);
+          }}
+          validate={(values) => {
+            const errors = {};
+
+            if (!values.email) {
+              errors.email = "Required!"; // email input field empty
+            } else if (
+              !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(values.email)
+            ) {
+              errors.email = "Invalid Email!";
+            }
+
+            if (!values.password) {
+              errors.password = "Required!";
+            } else if (values.password.length < 6) {
+              errors.password = "Password Should be at least 6 Characters & must be strong!";
+            }
+
+            if (this.state.mode === "Sing Up") {
+              if (!values.confirmPassword) {
+                errors.confirmPassword = "Required!";
+              } else if (values.confirmPassword !== values.password) {
+                errors.confirmPassword = "Password Should be matched!";
+              }
+            }
+
+            return errors;
+          }}
+        >
+          {({ values, handleChange, handleSubmit, errors }) => (
+            <div
+              style={{
+                border: "1px solid",
+                padding: "15px",
+                borderRadius: "5px",
+              }}
+            >
+              <button
+                style={{
+                  backgroundColor: "#D70F64",
+                  color: "white",
+                  width: "100%",
+                }}
+                className="btn btn-lg"
+                onClick={this.switchModeHandler}
+              >
+                Switch To {this.state.mode === "Sing Up" ? "LogIn" : "Sing Up"}
+              </button>
+              <br />
+              <br />
+              <form onSubmit={handleSubmit}>
+                <input
+                  className="form-control"
+                  name="email"
+                  placeholder="Type Your Email"
+                  value={values.email}
+                  onChange={handleChange}
+                />
+                <span style={{ color: "red" }}>{errors.email}</span>
+                <br />
+                <input
+                  className="form-control"
+                  name="password"
+                  placeholder="Password"
+                  value={values.password}
+                  onChange={handleChange}
+                />
+                <span style={{ color: "red" }}>{errors.password}</span>
+                <br />
+                {this.state.mode === "Sing Up" && (
+                  <div>
+                    <input
+                      className="form-control"
+                      name="confirmPassword"
+                      placeholder="RePassword"
+                      value={values.confirmPassword}
+                      onChange={handleChange}
+                    />
+                    <span style={{ color: "red" }}>
+                      {errors.confirmPassword}
+                    </span>
+                    <br />
+                  </div>
+                )}
+                <button type="submit" className="btn btn-success">
+                  {this.state.mode === "Sing Up" ? "Sing Up" : "LogIn"}
+                </button>
+              </form>
+            </div>
+          )}
+        </Formik>
+      </div>
+    );
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Auth);
+
+
+
+---------------------------
+authActionCreators.js=> When SignUp with LogIn page Password must be strogn either getting error. idToken: authorization ID, loacalID:userId, refreshToken: help to create new "idToken"
+---------------------------
+import * as actionType from './actionType';
+import axios from 'axios';
+
+//firebase : https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+
+
+export const auth=(email,password,mode) => {
+    console.log(email,password,mode);
+
+    return(dispatch=>{
+        const authData={
+            email:email,
+            password:password,
+            returnSecureToken:true, // according to firebase.
+        }
+        let authUrl=null;
+
+        if(mode ==="Sing Up"){
+            authUrl= "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+        }
+        else{
+            authUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+        }
+
+        const API_KEY="AIzaSyDVbB5Z2Lbzj4LsY_ag2b4S0YVzoVa-MEc";
+        axios.post(authUrl+API_KEY, authData)
+        .then(response=>console.log(response))
+        .catch(error=>console.log(error))
+    })
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------5 Using Redux for Authentication Token----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+reducer.js=>
+---------------------------
+import * as actionType from "./actionType";
+
+const INGREDIENT_PRICES = {
+	Salad: 20,
+	Cheese: 30,
+	Meat: 50,
+};
+
+const INITIAL_STATE = {
+	ingredients: [
+		{ type: "Salad", amount: 0 },
+		{ type: "Cheese", amount: 0 },
+		{ type: "Meat", amount: 0 },
+	],
+
+	orders:[],
+	orderLoading:true,
+	orderError:false,
+
+	totalPrice: 80,
+	purchasable: false,
+
+	//FireBase Auth variable: 
+	token :null, 
+	userId:null,
+
+};
+
+export const reducer = (state = INITIAL_STATE, action) => {
+	const ingredients = [...state.ingredients];
+	switch (action.type) {
+		case actionType.ADD_INGREDIENT:
+			for (let item of ingredients) {
+				if (item.type === action.payload) {
+					item.amount++;
+				}
+			}
+			return {
+				...state,
+				ingredients: ingredients,
+				totalPrice: state.totalPrice + INGREDIENT_PRICES[action.payload]
+			};
+
+		case actionType.REMOVED_INGREDIENT:
+			const updatedIngredients = [...state.ingredients];
+			const newPrice = state.totalPrice - INGREDIENT_PRICES[action.payload];
+			for (let item of updatedIngredients) {
+				if (item.type === action.payload) {
+					if (item.amount <= 0) return state;
+					item.amount--;
+				}
+			}
+			return {
+				...state,
+				ingredients: updatedIngredients,
+				totalPrice: newPrice,
+			};
+
+		case actionType.UPDATE_PURSHABLE:
+			const sum = state.ingredients.reduce((sum, element) => {
+				return sum + element.amount;
+			}, 0);
+			return {
+				...state,
+				purchasable: sum > 0,
+			};
+		case actionType.RESET_INGREDIENTS:
+			return{
+				...state,
+				ingredients: [
+					{ type: "Salad", amount: 0 },
+					{ type: "Cheese", amount: 0 },
+					{ type: "Meat", amount: 0 },
+				],
+			
+				totalPrice: 80,
+				purchasable: false,
+
+			}
+		case actionType.LOAD_ORDERS:
+			// console.log(action.payload)
+			let orders=[];
+			for(let key in action.payload)
+			{
+				// console.log(action.payload[key]);
+				orders.push({
+					...action.payload[key],
+					id:key,
+				})
+			}
+			// console.log(orders)
+			return{
+				...state,
+				orders:orders,
+				orderLoading:false,
+			}
+		case actionType.ORDER_LOAD_FAILED:
+			console.log(action);
+			return{
+				...state,
+				orderError:true,
+				orderLoading:false,
+			}
+		//FireBase Auth:
+		case actionType.AUTH_SUCCESS:
+			return{
+				...state,
+				token:action.payload.token,
+				userId:action.payload.userId
+			}
+
+		default:
+			return { ...state };
+	}
+};
+
+---------------------------
+authActionCreators.js->
+---------------------------
+import * as actionType from "./actionType";
+import axios from "axios";
+
+//firebase : https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+
+export const authSuccess = (token, userId) => {
+	return {
+		type: actionType.AUTH_SUCCESS,
+		payload: {
+			token: token,
+			userId: userId,
+		},
+	};
+};
+export const auth = (email, password, mode) => {
+	// console.log(email, password, mode);
+
+	return (dispatch) => {
+		const authData = {
+			email: email,
+			password: password,
+			returnSecureToken: true, // according to firebase.
+		};
+		let authUrl = null;
+
+		if (mode === "Sing Up") {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+		} else {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+		}
+
+		const API_KEY = "AIzaSyDVbB5Z2Lbzj4LsY_ag2b4S0YVzoVa-MEc";
+		axios
+			.post(authUrl + API_KEY, authData)
+			.then((response) =>
+				dispatch(authSuccess(response.data.idToken, response.data.localId)),
+			)
+			.catch((error) => console.log(error));
+	};
+};
+
+---------------------------
+Auth.js=>
+---------------------------
+import React, { Component } from "react";
+import { Formik } from "formik";
+import { auth } from "../../redux/authActionCreators";
+import { connect } from "react-redux";
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    auth: (email, password, mode) => dispatch(auth(email, password, mode)),
+  };
+};
+
+class Auth extends Component {
+  state = {
+    mode: "Sing Up",
+  };
+
+  switchModeHandler = () => {
+    this.setState((prevState) => ({
+      mode: prevState.mode === "Sing Up" ? "LogIn" : "Sing Up",
+    }));
+  };
+
+  render() {
+    return (
+      <div>
+        <Formik
+          initialValues={{
+            email: "",
+            password: "",
+            confirmPassword: "",
+          }}
+          onSubmit={(values) => {
+            this.props.auth(values.email, values.password, this.state.mode);
+          }}
+          validate={(values) => {
+            const errors = {};
+
+            if (!values.email) {
+              errors.email = "Required!"; // email input field empty
+            } else if (
+              !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(values.email)
+            ) {
+              errors.email = "Invalid Email!";
+            }
+
+            if (!values.password) {
+              errors.password = "Required!";
+            } else if (values.password.length < 6) {
+              errors.password = "Password Should be at least 6 Characters & must be strong!";
+            }
+
+            if (this.state.mode === "Sing Up") {
+              if (!values.confirmPassword) {
+                errors.confirmPassword = "Required!";
+              } else if (values.confirmPassword !== values.password) {
+                errors.confirmPassword = "Password Should be matched!";
+              }
+            }
+
+            return errors;
+          }}
+        >
+          {({ values, handleChange, handleSubmit, errors }) => (
+            <div
+              style={{
+                border: "1px solid",
+                padding: "15px",
+                borderRadius: "5px",
+              }}
+            >
+              <button
+                style={{
+                  backgroundColor: "#D70F64",
+                  color: "white",
+                  width: "100%",
+                }}
+                className="btn btn-lg"
+                onClick={this.switchModeHandler}
+              >
+                Switch To {this.state.mode === "Sing Up" ? "LogIn" : "Sing Up"}
+              </button>
+              <br />
+              <br />
+              <form onSubmit={handleSubmit}>
+                <input
+                  className="form-control"
+                  name="email"
+                  placeholder="Type Your Email"
+                  value={values.email}
+                  onChange={handleChange}
+                />
+                <span style={{ color: "red" }}>{errors.email}</span>
+                <br />
+                <input
+                  className="form-control"
+                  name="password"
+                  placeholder="Password"
+                  value={values.password}
+                  onChange={handleChange}
+                />
+                <span style={{ color: "red" }}>{errors.password}</span>
+                <br />
+                {this.state.mode === "Sing Up" && (
+                  <div>
+                    <input
+                      className="form-control"
+                      name="confirmPassword"
+                      placeholder="RePassword"
+                      value={values.confirmPassword}
+                      onChange={handleChange}
+                    />
+                    <span style={{ color: "red" }}>
+                      {errors.confirmPassword}
+                    </span>
+                    <br />
+                  </div>
+                )}
+                <button type="submit" className="btn btn-success">
+                  {this.state.mode === "Sing Up" ? "Sing Up" : "LogIn"}
+                </button>
+              </form>
+            </div>
+          )}
+        </Formik>
+      </div>
+    );
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Auth);
+
+
+
+---------------------------
+Header.js=>
+---------------------------
+import React from "react";
+import { Nav, Navbar, NavbarBrand, NavItem } from "reactstrap";
+import "./Header.css";
+import { NavLink } from "react-router-dom";
+import Logo2 from "../../assets/brandLogo2.png";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => {
+	return {
+		token: state.token,
+	};
+};
+
+const Header = (props) => {
+	let link = null;
+	if (props.token === null) {
+		link=(<Nav className="me-md-5">
+		<NavItem className="mx-3">
+			<NavLink to="/auth" className="NavLink">
+				LogIn
+			</NavLink>
+		</NavItem>
+	</Nav>)
+	} else {
+		link=(<Nav className="me-md-5">
+		<NavItem className="mx-2">
+			<NavLink to="/" className="NavLink">
+				BurgerBuilder
+			</NavLink>
+		</NavItem>
+		<NavItem className="mx-3">
+			<NavLink to="/order" className="NavLink">
+				Orders
+			</NavLink>
+		</NavItem>
+	</Nav>)
+	}
+	return (
+		<div className="Navigation">
+			<Navbar
+				style={{ backgroundColor: "#e21b70", height: "70px" }}
+				className="mx-auto"
+			>
+				<NavbarBrand className="Brand ms-md-5" href="/">
+					<img
+						src={Logo2}
+						alt="BrandLogo"
+						style={{ height: "50px", width: "50px", borderRadius: "50%" }}
+					/>
+				</NavbarBrand>
+				{link}
+			</Navbar>
+		</div>
+	);
+};
+
+export default connect(mapStateToProps)(Header);
+------------------------------------------------
+Main.js=>
+------------------------------------------------
+import React from "react";
+import Header from "./Header/Header";
+import BurgerBuilder from "./BurgerBuilder/BurgerBuilder";
+import Order from "./Order/Order";
+import CheckOut from "./Order/CheckOut/CheckOut";
+import Auth from "./Auth/Auth";
+import { connect } from "react-redux";
+import { Route, Routes, Navigate } from "react-router-dom";
+
+const mapStateToProps = (state) => {
+  return {
+    token: state.token,
+  };
+};
+
+const Main = (props) => {
+  let route = null;
+  if (props.token === null) {
+    route = (
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route
+          path="/*"
+          element={<Navigate to="/auth" replace={true} />}
+        />
+      </Routes>
+    );
+  } else {
+    route = (
+      <Routes>
+        <Route path="/" element={<BurgerBuilder />} />
+        <Route path="/order" element={<Order />} />
+        <Route path="/checkout" element={<CheckOut />} />
+        <Route
+          path="/auth"
+          element={<Navigate to="/" replace={true} />}
+        />
+      </Routes>
+    );
+  }
+  return (
+    <div>
+      <Header />
+      <div className="container">{route}</div>
+    </div>
+  );
+};
+
+export default connect(mapStateToProps)(Main);
+------------------------------------------------
+App.js=>
+------------------------------------------------
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import "./App.css";
+import Main from "./Component/Main";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+
+function App() {
+  return (
+    <div>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Main />
+        </BrowserRouter>
+      </Provider>
+    </div>
+  );
+}
+
+export default App;
+------------------------------------------------
+------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------6 Using Local Storage to Store token: Stay Login with LocalStorage Help--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+authActionCreators.js=>
+------------------------------------------------
+import * as actionType from "./actionType";
+import axios from "axios";
+
+//firebase : https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+
+export const authSuccess = (token, userId) => {
+	return {
+		type: actionType.AUTH_SUCCESS,
+		payload: {
+			token: token,
+			userId: userId,
+		},
+	};
+};
+export const auth = (email, password, mode) => {
+	// console.log(email, password, mode);
+
+	return (dispatch) => {
+		const authData = {
+			email: email,
+			password: password,
+			returnSecureToken: true, // according to firebase.
+		};
+		let authUrl = null;
+
+		if (mode === "Sing Up") {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+		} else {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+		}
+
+		const API_KEY = "AIzaSyDVbB5Z2Lbzj4LsY_ag2b4S0YVzoVa-MEc";
+		axios
+			.post(authUrl + API_KEY, authData)
+			.then((response) => {
+				localStorage.setItem("token", response.data.idToken);
+				localStorage.setItem("userId", response.data.localId);
+                const expirationTime = new Date(new Date().getTime() + response.data.expiresIn * 1000)
+				localStorage.setItem("expirationTime", expirationTime);
+				dispatch(authSuccess(response.data.idToken, response.data.localId));
+			})
+			.catch((error) => console.log(error));
+	};
+};
+
+
+// stay logIn with localStorage:
+export const authCheck = () => {
+    return (dispatch) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // LogOut
+      } else {
+        const expirationTime = new Date(localStorage.getItem("expirationTime"));
+        if (expirationTime <= new Date()) {
+          // LogOut
+        } else {
+          const userId = localStorage.getItem("userId"); // Fixed typo here
+          dispatch(authSuccess(token, userId));
+        }
+      }
+    };
+  };
+  
+------------------------------------------------
+Main.js=>
+------------------------------------------------
+import React, { Component } from "react";
+import Header from "./Header/Header";
+import BurgerBuilder from "./BurgerBuilder/BurgerBuilder";
+import Order from "./Order/Order";
+import CheckOut from "./Order/CheckOut/CheckOut";
+import Auth from "./Auth/Auth";
+import { connect } from "react-redux";
+import { Route, Routes, Navigate } from "react-router-dom";
+
+import { authCheck } from "../redux/authActionCreators";
+
+const mapStateToProps = (state) => {
+	return {
+		token: state.token,
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		authCheck: () => dispatch(authCheck()),
+	};
+};
+
+class Main extends Component {
+	componentDidMount() {
+		this.props.authCheck();
+	}
+
+	render() {
+		let route = null;
+		if (this.props.token === null) {
+			route = (
+				<Routes>
+					<Route path="/auth" element={<Auth />} />
+					<Route path="/*" element={<Navigate to="/auth" replace={true} />} />
+				</Routes>
+			);
+		} else {
+			route = (
+				<Routes>
+					<Route path="/" element={<BurgerBuilder />} />
+					<Route path="/order" element={<Order />} />
+					<Route path="/checkout" element={<CheckOut />} />
+					<Route path="/auth" element={<Navigate to="/" replace={true} />} />
+				</Routes>
+			);
+		}
+		return (
+			<div>
+				<Header />
+				<div className="container">{route}</div>
+			</div>
+		);
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
+
+------------------------------------------------
+authActionCreators + reducer + Logout+ Header + Main.js
+------------------------------------------------
+------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------7. Adding Logout Option----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+authActionCreators.js=>
+------------------------------------------------
+import * as actionType from "./actionType";
+import axios from "axios";
+
+//firebase : https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+
+export const authSuccess = (token, userId) => {
+	return {
+		type: actionType.AUTH_SUCCESS,
+		payload: {
+			token: token,
+			userId: userId,
+		},
+	};
+};
+export const auth = (email, password, mode) => {
+	// console.log(email, password, mode);
+
+	return (dispatch) => {
+		const authData = {
+			email: email,
+			password: password,
+			returnSecureToken: true, // according to firebase.
+		};
+		let authUrl = null;
+
+		if (mode === "Sing Up") {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+		} else {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+		}
+
+		const API_KEY = "AIzaSyDVbB5Z2Lbzj4LsY_ag2b4S0YVzoVa-MEc";
+		axios
+			.post(authUrl + API_KEY, authData)
+			.then((response) => {
+				localStorage.setItem("token", response.data.idToken);
+				localStorage.setItem("userId", response.data.localId);
+                const expirationTime = new Date(new Date().getTime() + response.data.expiresIn * 1000)
+				localStorage.setItem("expirationTime", expirationTime);
+				dispatch(authSuccess(response.data.idToken, response.data.localId));
+			})
+			.catch((error) => console.log(error));
+	};
+};
+
+//LogOut:
+
+export const logout= ()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("expirationTime");
+    return{
+        type:actionType.AUTH_LOGOUT
+    }
+}
+
+// stay logIn with localStorage:
+export const authCheck = () => {
+    return (dispatch) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // LogOut:
+        dispatch(logout());
+      } else {
+        const expirationTime = new Date(localStorage.getItem("expirationTime"));
+        if (expirationTime <= new Date()) {
+          // LogOut
+          dispatch(logout());
+        } else {
+          const userId = localStorage.getItem("userId"); // Fixed typo here
+          dispatch(authSuccess(token, userId));
+        }
+      }
+    };
+  };
+
+
+  
+------------------------------------------------
+reducer.js=>
+------------------------------------------------
+import * as actionType from "./actionType";
+
+const INGREDIENT_PRICES = {
+	Salad: 20,
+	Cheese: 30,
+	Meat: 50,
+};
+
+const INITIAL_STATE = {
+	ingredients: [
+		{ type: "Salad", amount: 0 },
+		{ type: "Cheese", amount: 0 },
+		{ type: "Meat", amount: 0 },
+	],
+
+	orders:[],
+	orderLoading:true,
+	orderError:false,
+
+	totalPrice: 80,
+	purchasable: false,
+
+	//FireBase Auth variable: 
+	token :null, 
+	userId:null,
+
+};
+
+export const reducer = (state = INITIAL_STATE, action) => {
+	const ingredients = [...state.ingredients];
+	switch (action.type) {
+		case actionType.ADD_INGREDIENT:
+			for (let item of ingredients) {
+				if (item.type === action.payload) {
+					item.amount++;
+				}
+			}
+			return {
+				...state,
+				ingredients: ingredients,
+				totalPrice: state.totalPrice + INGREDIENT_PRICES[action.payload]
+			};
+
+		case actionType.REMOVED_INGREDIENT:
+			const updatedIngredients = [...state.ingredients];
+			const newPrice = state.totalPrice - INGREDIENT_PRICES[action.payload];
+			for (let item of updatedIngredients) {
+				if (item.type === action.payload) {
+					if (item.amount <= 0) return state;
+					item.amount--;
+				}
+			}
+			return {
+				...state,
+				ingredients: updatedIngredients,
+				totalPrice: newPrice,
+			};
+
+		case actionType.UPDATE_PURSHABLE:
+			const sum = state.ingredients.reduce((sum, element) => {
+				return sum + element.amount;
+			}, 0);
+			return {
+				...state,
+				purchasable: sum > 0,
+			};
+		case actionType.RESET_INGREDIENTS:
+			return{
+				...state,
+				ingredients: [
+					{ type: "Salad", amount: 0 },
+					{ type: "Cheese", amount: 0 },
+					{ type: "Meat", amount: 0 },
+				],
+			
+				totalPrice: 80,
+				purchasable: false,
+
+			}
+		case actionType.LOAD_ORDERS:
+			// console.log(action.payload)
+			let orders=[];
+			for(let key in action.payload)
+			{
+				// console.log(action.payload[key]);
+				orders.push({
+					...action.payload[key],
+					id:key,
+				})
+			}
+			// console.log(orders)
+			return{
+				...state,
+				orders:orders,
+				orderLoading:false,
+			}
+		case actionType.ORDER_LOAD_FAILED:
+			console.log(action);
+			return{
+				...state,
+				orderError:true,
+				orderLoading:false,
+			}
+		//FireBase Auth:
+		case actionType.AUTH_SUCCESS:
+			return{
+				...state,
+				token:action.payload.token,
+				userId:action.payload.userId
+			}
+		case actionType.AUTH_LOGOUT:
+			return{
+				...state,
+				token:null,
+				userId:null,
+
+			}
+
+		default:
+			return { ...state };
+	}
+};
+
+------------------------------------------------
+Logout.js=>
+------------------------------------------------
+import React, { Component } from "react";
+import { logout } from "../../redux/authActionCreators";
+import { connect } from "react-redux";
+import { Navigate, Routes, Route } from "react-router-dom";
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => dispatch(logout()),
+  };
+};
+
+class Logout extends Component {
+  componentDidMount() {
+    this.props.logout();
+  }
+
+  render() {
+    return (
+      <div>
+        <Routes>
+          <Route path="/logout/*" element={<Navigate to="/auth" replace={true} />} />
+        </Routes>
+      </div>
+    );
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Logout);
+
+
+
+
+
+// import React, { Component } from "react";
+// import { logout } from "../../redux/authActionCreators";
+// import { connect } from "react-redux";
+// import { Navigate, Routes, Route } from "react-router-dom";
+
+// const mapDispatchToProps = (dispatch) => {
+// 	return {
+// 		logout: () => dispatch(logout()),
+// 	};
+// };
+// class Logout extends Component {
+// 	componentDidMount(){
+//         this.props.logout();
+//     }
+// 	render() {
+// 		return (
+// 			<div>
+// 				<Routes>
+// 					<Route path="/" element={<Navigate to="/auth" replace={true} />} />
+// 				</Routes>
+// 			</div>
+// 		);
+// 	}
+// }
+
+// export default connect(mapDispatchToProps)(Logout);
+
+------------------------------------------------
+Header.js=>
+------------------------------------------------
+import React from "react";
+import { Nav, Navbar, NavbarBrand, NavItem } from "reactstrap";
+import "./Header.css";
+import { NavLink } from "react-router-dom";
+import Logo2 from "../../assets/brandLogo2.png";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => {
+	return {
+		token: state.token,
+	};
+};
+
+const Header = (props) => {
+	let link = null;
+	if (props.token === null) {
+		link=(<Nav className="me-md-5">
+		<NavItem className="mx-3">
+			<NavLink to="/auth" className="NavLink">
+				LogIn
+			</NavLink>
+		</NavItem>
+	</Nav>)
+	} else {
+		link=(<Nav className="me-md-5">
+		<NavItem className="mx-2">
+			<NavLink to="/" className="NavLink">
+				BurgerBuilder
+			</NavLink>
+		</NavItem>
+		<NavItem className="mx-3">
+			<NavLink to="/order" className="NavLink">
+				Orders
+			</NavLink>
+		</NavItem>
+		<NavItem className="mx-3">
+			<NavLink to="/logout" className="NavLink">
+				LogOut
+			</NavLink>
+		</NavItem>
+	</Nav>)
+	}
+	return (
+		<div className="Navigation">
+			<Navbar
+				style={{ backgroundColor: "#e21b70", height: "70px" }}
+				className="mx-auto"
+			>
+				<NavbarBrand className="Brand ms-md-5" href="/">
+					<img
+						src={Logo2}
+						alt="BrandLogo"
+						style={{ height: "50px", width: "50px", borderRadius: "50%" }}
+					/>
+				</NavbarBrand>
+				{link}
+			</Navbar>
+		</div>
+	);
+};
+
+export default connect(mapStateToProps)(Header);
+
+------------------------------------------------
+Main.js=>
+------------------------------------------------
+import React, { Component } from "react";
+import Header from "./Header/Header";
+import BurgerBuilder from "./BurgerBuilder/BurgerBuilder";
+import Order from "./Order/Order";
+import CheckOut from "./Order/CheckOut/CheckOut";
+import Auth from "./Auth/Auth";
+import { connect } from "react-redux";
+import { Route, Routes, Navigate } from "react-router-dom";
+
+import { authCheck } from "../redux/authActionCreators";
+import Logout from "./Auth/Logout";
+
+const mapStateToProps = (state) => {
+	return {
+		token: state.token,
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		authCheck: () => dispatch(authCheck()),
+	};
+};
+
+class Main extends Component {
+	componentDidMount() {
+		this.props.authCheck();
+	}
+
+	render() {
+		let route = null;
+		if (this.props.token === null) {
+			route = (
+				<Routes>
+					<Route path="/auth" element={<Auth />} />
+					<Route path="/logout/*" element={<Navigate to="/auth" replace={true} />} />
+					<Route path="/*" element={<Navigate to="/auth" replace={true} />} />
+				</Routes>
+			);
+		} else {
+			route = (
+				<Routes>
+					<Route path="/" element={<BurgerBuilder />} />
+					<Route path="/order" element={<Order />} />
+					<Route path="/checkout" element={<CheckOut />} />
+					<Route path="/logout/*" element={<Logout />} />
+					<Route path="/auth" element={<Navigate to="/" replace={true} />} />
+				</Routes>
+			);
+		}
+		return (
+			<div>
+				<Header />
+				<div className="container">{route}</div>
+			</div>
+		);
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
+
+
+------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------8. Adding Spinner: when LogIn -------------------------------------------------------------------------------
+
+------------------------------------------------
+actionType.js=>
+------------------------------------------------
+export const ADD_INGREDIENT = "ADD_INGREDIENT";
+export const REMOVED_INGREDIENT = "REMOVED_INGREDIENT";
+export const UPDATE_PURSHABLE = "UPDATE_PURSHABLE";
+
+export const RESET_INGREDIENTS = "RESET_INGREDIENTS";
+
+export const LOAD_ORDERS = "LOAD_ORDERS";
+export const ORDER_LOAD_FAILED= "ORDER_LOAD_FAILED";
+
+
+export const AUTH_SUCCESS = "AUTH_SUCCESS";
+export const AUTH_FAILED = "AUTH_FAILED";
+export const AUTH_LOAD = "AUTH_LOAD";
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
+
+export const AUTH_LOADING = "AUTH_LOADING"; //new add this
+------------------------------------------------
+authActionCreators.js=>
+------------------------------------------------
+import * as actionType from "./actionType";
+import axios from "axios";
+
+//firebase : https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+
+export const authSuccess = (token, userId) => {
+	return {
+		type: actionType.AUTH_SUCCESS,
+		payload: {
+			token: token,
+			userId: userId,
+		},
+	};
+};
+//authLoading:
+export const authLaoding=(isLoading)=>{
+	return{
+		type:actionType.AUTH_LOADING,
+		payload:isLoading,
+	}
+}
+export const auth = (email, password, mode) => {
+	// console.log(email, password, mode);
+
+	
+
+	return (dispatch) => {
+		dispatch(authLaoding(true)); // call authLoading () , show the spinner //if error fix here...
+		const authData = {
+			email: email,
+			password: password,
+			returnSecureToken: true, // according to firebase.
+		};
+		let authUrl = null;
+
+		if (mode === "Sing Up") {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+		} else {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+		}
+
+		const API_KEY = "AIzaSyDVbB5Z2Lbzj4LsY_ag2b4S0YVzoVa-MEc";
+		axios
+			.post(authUrl + API_KEY, authData)
+			.then((response) => {
+
+				dispatch(authLaoding(false)); // when Login/singIn then spinner false.
+
+				localStorage.setItem("token", response.data.idToken);
+				localStorage.setItem("userId", response.data.localId);
+                const expirationTime = new Date(new Date().getTime() + response.data.expiresIn * 1000)
+				localStorage.setItem("expirationTime", expirationTime);
+				dispatch(authSuccess(response.data.idToken, response.data.localId));
+			})
+			.catch((error) => {
+				dispatch(authLaoding(false)); // when Login/singIn then spinner false. 
+				console.log(error);
+			});
+	};
+};
+
+//LogOut:
+
+export const logout= ()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("expirationTime");
+    return{
+        type:actionType.AUTH_LOGOUT
+    }
+}
+
+
+// stay logIn with localStorage:
+export const authCheck = () => {
+    return (dispatch) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // LogOut:
+        dispatch(logout());
+      } else {
+        const expirationTime = new Date(localStorage.getItem("expirationTime"));
+        if (expirationTime <= new Date()) {
+          // LogOut
+          dispatch(logout());
+        } else {
+          const userId = localStorage.getItem("userId"); // Fixed typo here
+          dispatch(authSuccess(token, userId));
+        }
+      }
+    };
+  };
+------------------------------------------------
+reducer.js=>
+------------------------------------------------
+import * as actionType from "./actionType";
+
+const INGREDIENT_PRICES = {
+	Salad: 20,
+	Cheese: 30,
+	Meat: 50,
+};
+
+const INITIAL_STATE = {
+	ingredients: [
+		{ type: "Salad", amount: 0 },
+		{ type: "Cheese", amount: 0 },
+		{ type: "Meat", amount: 0 },
+	],
+
+	orders:[],
+	orderLoading:true,
+	orderError:false,
+
+	totalPrice: 80,
+	purchasable: false,
+
+	//FireBase Auth variable: 
+	token :null, 
+	userId:null,
+
+	//AuthLoading:
+	authLoading:false,
+	authFailedMsg:null,
+
+};
+
+export const reducer = (state = INITIAL_STATE, action) => {
+	const ingredients = [...state.ingredients];
+	switch (action.type) {
+		case actionType.ADD_INGREDIENT:
+			for (let item of ingredients) {
+				if (item.type === action.payload) {
+					item.amount++;
+				}
+			}
+			return {
+				...state,
+				ingredients: ingredients,
+				totalPrice: state.totalPrice + INGREDIENT_PRICES[action.payload]
+			};
+
+		case actionType.REMOVED_INGREDIENT:
+			const updatedIngredients = [...state.ingredients];
+			const newPrice = state.totalPrice - INGREDIENT_PRICES[action.payload];
+			for (let item of updatedIngredients) {
+				if (item.type === action.payload) {
+					if (item.amount <= 0) return state;
+					item.amount--;
+				}
+			}
+			return {
+				...state,
+				ingredients: updatedIngredients,
+				totalPrice: newPrice,
+			};
+
+		case actionType.UPDATE_PURSHABLE:
+			const sum = state.ingredients.reduce((sum, element) => {
+				return sum + element.amount;
+			}, 0);
+			return {
+				...state,
+				purchasable: sum > 0,
+			};
+		case actionType.RESET_INGREDIENTS:
+			return{
+				...state,
+				ingredients: [
+					{ type: "Salad", amount: 0 },
+					{ type: "Cheese", amount: 0 },
+					{ type: "Meat", amount: 0 },
+				],
+			
+				totalPrice: 80,
+				purchasable: false,
+
+			}
+		case actionType.LOAD_ORDERS:
+			// console.log(action.payload)
+			let orders=[];
+			for(let key in action.payload)
+			{
+				// console.log(action.payload[key]);
+				orders.push({
+					...action.payload[key],
+					id:key,
+				})
+			}
+			// console.log(orders)
+			return{
+				...state,
+				orders:orders,
+				orderLoading:false,
+			}
+		case actionType.ORDER_LOAD_FAILED:
+			console.log(action);
+			return{
+				...state,
+				orderError:true,
+				orderLoading:false,
+			}
+		//FireBase Auth:
+		case actionType.AUTH_SUCCESS:
+			return{
+				...state,
+				token:action.payload.token,
+				userId:action.payload.userId
+			}
+		case actionType.AUTH_LOGOUT:
+			return{
+				...state,
+				token:null,
+				userId:null,
+
+			}
+		case actionType.AUTH_LOADING:
+			return{
+				...state,
+				authLoading:action.payload,
+			}
+
+		default:
+			return { ...state };
+	}
+};
+
+------------------------------------------------
+//This is the Auth Login form...=> 
+
+import React, { Component } from "react";
+import { Formik } from "formik";
+import { auth } from "../../redux/authActionCreators";
+import { connect } from "react-redux";
+import Spinner from "../Spinner/Spinner";
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    auth: (email, password, mode) => dispatch(auth(email, password, mode)),
+  };
+};
+
+const mapStateToProps = (state)=>{
+  return{
+    authLoading:state.authLoading,
+	  authFailedMsg:state.authFailedMsg,
+  }
+}
+
+class Auth extends Component {
+  state = {
+    mode: "Sing Up",
+  };
+
+  switchModeHandler = () => {
+    this.setState((prevState) => ({
+      mode: prevState.mode === "Sing Up" ? "LogIn" : "Sing Up",
+    }));
+  };
+
+  render() {
+    let form=null;
+    if(this.props.authLoading){
+     form= <Spinner/>
+    }
+    else{
+       form=(
+        <Formik
+        initialValues={{
+          email: "",
+          password: "",
+          confirmPassword: "",
+        }}
+        onSubmit={(values) => {
+          this.props.auth(values.email, values.password, this.state.mode);
+        }}
+        validate={(values) => {
+          const errors = {};
+
+          if (!values.email) {
+            errors.email = "Required!"; // email input field empty
+          } else if (
+            !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(values.email)
+          ) {
+            errors.email = "Invalid Email!";
+          }
+
+          if (!values.password) {
+            errors.password = "Required!";
+          } else if (values.password.length < 6) {
+            errors.password = "Password Should be at least 6 Characters & must be strong!";
+          }
+
+          if (this.state.mode === "Sing Up") {
+            if (!values.confirmPassword) {
+              errors.confirmPassword = "Required!";
+            } else if (values.confirmPassword !== values.password) {
+              errors.confirmPassword = "Password Should be matched!";
+            }
+          }
+
+          return errors;
+        }}
+      >
+        {({ values, handleChange, handleSubmit, errors }) => (
+          <div
+            style={{
+              border: "1px solid",
+              padding: "15px",
+              borderRadius: "5px",
+            }}
+          >
+            <button
+              style={{
+                backgroundColor: "#D70F64",
+                color: "white",
+                width: "100%",
+              }}
+              className="btn btn-lg"
+              onClick={this.switchModeHandler}
+            >
+              Switch To {this.state.mode === "Sing Up" ? "LogIn" : "Sing Up"}
+            </button>
+            <br />
+            <br />
+            <form onSubmit={handleSubmit}>
+              <input
+                className="form-control"
+                name="email"
+                placeholder="Type Your Email"
+                value={values.email}
+                onChange={handleChange}
+              />
+              <span style={{ color: "red" }}>{errors.email}</span>
+              <br />
+              <input
+                className="form-control"
+                name="password"
+                placeholder="Password"
+                value={values.password}
+                onChange={handleChange}
+              />
+              <span style={{ color: "red" }}>{errors.password}</span>
+              <br />
+              {this.state.mode === "Sing Up" && (
+                <div>
+                  <input
+                    className="form-control"
+                    name="confirmPassword"
+                    placeholder="RePassword"
+                    value={values.confirmPassword}
+                    onChange={handleChange}
+                  />
+                  <span style={{ color: "red" }}>
+                    {errors.confirmPassword}
+                  </span>
+                  <br />
+                </div>
+              )}
+              <button type="submit" className="btn btn-success">
+                {this.state.mode === "Sing Up" ? "Sing Up" : "LogIn"}
+              </button>
+            </form>
+          </div>
+        )}
+      </Formik>
+       )
+    }
+
+    return (
+      <div>
+        {form}
+      </div>
+    );
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+
+------------------------------------------------
+
+----------------------------------------------------9 Error Handling: if logIn/SingUp Failed----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------
+actionType.js=>
+------------------------------------------------
+export const ADD_INGREDIENT = "ADD_INGREDIENT";
+export const REMOVED_INGREDIENT = "REMOVED_INGREDIENT";
+export const UPDATE_PURSHABLE = "UPDATE_PURSHABLE";
+
+export const RESET_INGREDIENTS = "RESET_INGREDIENTS";
+
+export const LOAD_ORDERS = "LOAD_ORDERS";
+export const ORDER_LOAD_FAILED= "ORDER_LOAD_FAILED";
+
+
+export const AUTH_SUCCESS = "AUTH_SUCCESS";
+export const AUTH_FAILED = "AUTH_FAILED";
+export const AUTH_LOAD = "AUTH_LOAD";
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
+
+export const AUTH_LOADING = "AUTH_LOADING";
+------------------------------------------------
+authActionCreators.js=>
+------------------------------------------------
+import * as actionType from "./actionType";
+import axios from "axios";
+
+//firebase : https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+
+export const authSuccess = (token, userId) => {
+	return {
+		type: actionType.AUTH_SUCCESS,
+		payload: {
+			token: token,
+			userId: userId,
+		},
+	};
+};
+
+//authLoading:
+export const authLaoding=(isLoading)=>{
+	return{
+		type:actionType.AUTH_LOADING,
+		payload:isLoading,
+	}
+}
+
+//authFailed: 
+export const authFailed=(errorMsg)=>{
+	return{
+		type:actionType.AUTH_FAILED,
+		payload:errorMsg,
+	}
+
+}
+
+export const auth = (email, password, mode) => {
+	// console.log(email, password, mode);
+
+	
+
+	return (dispatch) => {
+		dispatch(authLaoding(true)); // call authLoading () , show the spinner //if error fix here...
+		const authData = {
+			email: email,
+			password: password,
+			returnSecureToken: true, // according to firebase.
+		};
+		let authUrl = null;
+
+		if (mode === "Sing Up") {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+		} else {
+			authUrl =
+				"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+		}
+
+		const API_KEY = "AIzaSyDVbB5Z2Lbzj4LsY_ag2b4S0YVzoVa-MEc";
+		axios
+			.post(authUrl + API_KEY, authData)
+			.then((response) => {
+
+				dispatch(authLaoding(false)); // when Login/singIn then spinner false.
+
+				localStorage.setItem("token", response.data.idToken);
+				localStorage.setItem("userId", response.data.localId);
+                const expirationTime = new Date(new Date().getTime() + response.data.expiresIn * 1000)
+				localStorage.setItem("expirationTime", expirationTime);
+				dispatch(authSuccess(response.data.idToken, response.data.localId));
+			})
+			.catch((error) => {
+				
+				dispatch(authLaoding(false)); // when Login/singIn then spinner false. 
+				dispatch(authFailed(error.response.data.error.message));
+				// console.log(error.response.data.error.message);
+				
+			});
+	};
+};
+
+//LogOut:
+
+export const logout= ()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("expirationTime");
+    return{
+        type:actionType.AUTH_LOGOUT
+    }
+}
+
+
+// stay logIn with localStorage:
+export const authCheck = () => {
+    return (dispatch) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // LogOut:
+        dispatch(logout());
+      } else {
+        const expirationTime = new Date(localStorage.getItem("expirationTime"));
+        if (expirationTime <= new Date()) {
+          // LogOut
+          dispatch(logout());
+        } else {
+          const userId = localStorage.getItem("userId"); // Fixed typo here
+          dispatch(authSuccess(token, userId));
+        }
+      }
+    };
+  };
+
+
+  
+------------------------------------------------
+reducer.js=>
+------------------------------------------------
+import * as actionType from "./actionType";
+
+const INGREDIENT_PRICES = {
+	Salad: 20,
+	Cheese: 30,
+	Meat: 50,
+};
+
+const INITIAL_STATE = {
+	ingredients: [
+		{ type: "Salad", amount: 0 },
+		{ type: "Cheese", amount: 0 },
+		{ type: "Meat", amount: 0 },
+	],
+
+	orders:[],
+	orderLoading:true,
+	orderError:false,
+
+	totalPrice: 80,
+	purchasable: false,
+
+	//FireBase Auth variable: 
+	token :null, 
+	userId:null,
+
+	//AuthLoading:
+	authLoading:false,
+	authFailedMsg:null,
+
+};
+
+export const reducer = (state = INITIAL_STATE, action) => {
+	const ingredients = [...state.ingredients];
+	switch (action.type) {
+		case actionType.ADD_INGREDIENT:
+			for (let item of ingredients) {
+				if (item.type === action.payload) {
+					item.amount++;
+				}
+			}
+			return {
+				...state,
+				ingredients: ingredients,
+				totalPrice: state.totalPrice + INGREDIENT_PRICES[action.payload]
+			};
+
+		case actionType.REMOVED_INGREDIENT:
+			const updatedIngredients = [...state.ingredients];
+			const newPrice = state.totalPrice - INGREDIENT_PRICES[action.payload];
+			for (let item of updatedIngredients) {
+				if (item.type === action.payload) {
+					if (item.amount <= 0) return state;
+					item.amount--;
+				}
+			}
+			return {
+				...state,
+				ingredients: updatedIngredients,
+				totalPrice: newPrice,
+			};
+
+		case actionType.UPDATE_PURSHABLE:
+			const sum = state.ingredients.reduce((sum, element) => {
+				return sum + element.amount;
+			}, 0);
+			return {
+				...state,
+				purchasable: sum > 0,
+			};
+		case actionType.RESET_INGREDIENTS:
+			return{
+				...state,
+				ingredients: [
+					{ type: "Salad", amount: 0 },
+					{ type: "Cheese", amount: 0 },
+					{ type: "Meat", amount: 0 },
+				],
+			
+				totalPrice: 80,
+				purchasable: false,
+
+			}
+		case actionType.LOAD_ORDERS:
+			// console.log(action.payload)
+			let orders=[];
+			for(let key in action.payload)
+			{
+				// console.log(action.payload[key]);
+				orders.push({
+					...action.payload[key],
+					id:key,
+				})
+			}
+			// console.log(orders)
+			return{
+				...state,
+				orders:orders,
+				orderLoading:false,
+			}
+		case actionType.ORDER_LOAD_FAILED:
+			console.log(action);
+			return{
+				...state,
+				orderError:true,
+				orderLoading:false,
+			}
+		//FireBase Auth:
+		case actionType.AUTH_SUCCESS:
+			return{
+				...state,
+				token:action.payload.token,
+				userId:action.payload.userId
+			}
+		case actionType.AUTH_LOGOUT:
+			return{
+				...state,
+				token:null,
+				userId:null,
+				authFailedMsg:null, //last Add
+
+			}
+		case actionType.AUTH_LOADING:
+			return{
+				...state,
+				authLoading:action.payload,
+			}
+		case actionType.AUTH_FAILED:
+			return{
+				...state,
+				authFailedMsg:action.payload,
+			}
+
+		default:
+			return { ...state };
+	}
+};
+
+------------------------------------------------
+Auth.js=>
+------------------------------------------------
+//This is the Auth Login form...=> 
+
+import React, { Component } from "react";
+import { Formik } from "formik";
+import { auth } from "../../redux/authActionCreators";
+import { connect } from "react-redux";
+import Spinner from "../Spinner/Spinner";
+import { Alert } from "reactstrap";
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    auth: (email, password, mode) => dispatch(auth(email, password, mode)),
+  };
+};
+
+const mapStateToProps = (state)=>{
+  return{
+    authLoading:state.authLoading,
+	  authFailedMsg:state.authFailedMsg,
+  }
+}
+
+class Auth extends Component {
+  state = {
+    mode: "Sing Up",
+  };
+
+  switchModeHandler = () => {
+    this.setState((prevState) => ({
+      mode: prevState.mode === "Sing Up" ? "LogIn" : "Sing Up",
+    }));
+  };
+
+  render() {
+    // console.log(this.props.authFailedMsg);
+    let error=null;
+    if(this.props.authFailedMsg !== null){
+      error = (
+        <Alert color="danger">{this.props.authFailedMsg}</Alert>
+      )
+    }
+
+
+    let form=null;
+    if(this.props.authLoading){
+     form= <Spinner/>
+    }
+    else{
+       form=(
+        <Formik
+        initialValues={{
+          email: "",
+          password: "",
+          confirmPassword: "",
+        }}
+        onSubmit={(values) => {
+          this.props.auth(values.email, values.password, this.state.mode);
+        }}
+        validate={(values) => {
+          const errors = {};
+
+          if (!values.email) {
+            errors.email = "Required!"; // email input field empty
+          } else if (
+            !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(values.email)
+          ) {
+            errors.email = "Invalid Email!";
+          }
+
+          if (!values.password) {
+            errors.password = "Required!";
+          } else if (values.password.length < 6) {
+            errors.password = "Password Should be at least 6 Characters & must be strong!";
+          }
+
+          if (this.state.mode === "Sing Up") {
+            if (!values.confirmPassword) {
+              errors.confirmPassword = "Required!";
+            } else if (values.confirmPassword !== values.password) {
+              errors.confirmPassword = "Password Should be matched!";
+            }
+          }
+
+          return errors;
+        }}
+      >
+        {({ values, handleChange, handleSubmit, errors }) => (
+          <div
+            style={{
+              border: "1px solid",
+              padding: "15px",
+              borderRadius: "5px",
+            }}
+          >
+            <button
+              style={{
+                backgroundColor: "#D70F64",
+                color: "white",
+                width: "100%",
+              }}
+              className="btn btn-lg"
+              onClick={this.switchModeHandler}
+            >
+              Switch To {this.state.mode === "Sing Up" ? "LogIn" : "Sing Up"}
+            </button>
+            <br />
+            <br />
+            <form onSubmit={handleSubmit}>
+              <input
+                className="form-control"
+                name="email"
+                placeholder="Type Your Email"
+                value={values.email}
+                onChange={handleChange}
+              />
+              <span style={{ color: "red" }}>{errors.email}</span>
+              <br />
+              <input
+                className="form-control"
+                name="password"
+                placeholder="Password"
+                value={values.password}
+                onChange={handleChange}
+              />
+              <span style={{ color: "red" }}>{errors.password}</span>
+              <br />
+              {this.state.mode === "Sing Up" && (
+                <div>
+                  <input
+                    className="form-control"
+                    name="confirmPassword"
+                    placeholder="RePassword"
+                    value={values.confirmPassword}
+                    onChange={handleChange}
+                  />
+                  <span style={{ color: "red" }}>
+                    {errors.confirmPassword}
+                  </span>
+                  <br />
+                </div>
+              )}
+              <button type="submit" className="btn btn-success">
+                {this.state.mode === "Sing Up" ? "Sing Up" : "LogIn"}
+              </button>
+            </form>
+          </div>
+        )}
+      </Formik>
+       )
+    }
+
+    return (
+      <div>
+        {error}
+        {form}
+      </div>
+    );
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+
+
+
+
+-----------------------------------------------------10 Showing User Specific Orders---------------------------------------------------------------------------------
+goto firebase -> Realtime Database ->
+----------------------------------------------------
+{
+  "rules": {
+    ".read": "true",  // 2023-8-4
+    ".write": "true",  // 2023-8-4
+  }
+}
+change this to => unAuthorized person can't see the orders.
+------------------
+{
+  "rules": {
+    ".read": "auth!=null",  // 2023-8-4
+    ".write": "auth!=null",  // 2023-8-4
+  }
+}
+change this to => for showing order according to userId=>
+-----------------------------------------------------
+{
+  "rules": {
+	"order":{
+		".read": "auth!=null",  // 2023-8-4
+    	".write": "auth!=null",  // 2023-8-4
+		".indexOn" : ["userId"]
+	}
+    
+  }
+}
+----------------------------------------------------
+actionCreators.js=>
+----------------------------------------------------
+import * as actionType from './actionType';
+import axios from 'axios';
+
+export const addIngredient = (igtype)=>{
+    return{
+        type:actionType.ADD_INGREDIENT,
+        payload:igtype
+    }
+}
+
+export const removedIngredient = (igtype)=>{
+    return{
+        type:actionType.REMOVED_INGREDIENT,
+        payload:igtype,
+    }
+}
+
+export const updatePurchable = ()=>{
+    return {
+        type:actionType.UPDATE_PURSHABLE,
+    }
+}
+
+export const resetIngredients = () => {
+    return {
+        type:actionType.RESET_INGREDIENTS,
+    }
+}
+
+export const loadOrder = (orders)=>{
+    return {
+        type:actionType.LOAD_ORDERS,
+        payload:orders
+    }
+}
+
+export const orderLoadedFailed = () =>{
+    return{
+        type:actionType.ORDER_LOAD_FAILED,
+    }
+}
+
+export const fetchOrder = (token,userId) => dispatch=>{
+    const queryParams = '&orderBy="userId"&equalTo="'+ userId +'"'; //fireBase rule to show data wich is match with userId.
+    
+    axios.get('https://burgerbuliders-default-rtdb.firebaseio.com/order.json?auth='+ token + queryParams ) // last modified
+    .then(response=>{
+        dispatch(loadOrder(response.data))// without dispatch this function can't pass to the reducer.js
+    })
+    .catch(error=>{
+        dispatch(orderLoadedFailed(error))
+    })
+}
+----------------------------------------------------
+Order.js=>
+----------------------------------------------------
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { fetchOrder } from "../../redux/actionCreators";
+import SingleOrder from "./SingleOrder";
+import  Spinner  from "../Spinner/Spinner";
+
+const mapStateToProps = (state) => {
+	return {
+		orders: state.orders,
+		orderLoading: state.orderLoading,
+		orderError: state.orderError,
+    token:state.token, //last add,
+    userId:state.userId,// pass to the fetchOrder function.
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		fetchOrder: (token,userId) => dispatch(fetchOrder(token,userId)), // token,userId lass add
+	};
+};
+
+class Order extends Component {
+	componentDidMount() {
+		this.props.fetchOrder(this.props.token,this.props.userId); // for calling this function... //Last Add token, userId
+	}
+
+	componentDidUpdate() {
+		// console.log(this.props); // check that data is coming from reducer function or not...
+	}
+
+
+
+	render() {
+    let orders = null
+    if(this.props.orderError){
+      orders= <p style={{
+        border: "1px solid grey",
+        boxShadow: "1px 1px #888888",
+        borderRadius: "5px",
+        padding: "5px",
+        marginRight:"5px"
+      }}>Sorry Failed to Laod the Orders!</p>
+    }
+    else{
+      if(this.props.orders.length === 0){
+        orders= <p style={{
+          border: "1px solid grey",
+          boxShadow: "1px 1px #888888",
+          borderRadius: "5px",
+          padding: "5px",
+          marginRight:"5px"
+        }}>You have no Orders!</p>
+      }
+      else{
+        // console.log(this.props.orders.length);
+        orders = this.props.orders.map((order)=>{
+          return (
+            <SingleOrder order={order} key={order.id}/>
+          )
+        })
+
+      }
+      
+    } 
+
+		return(
+    <div>{this.props.orderLoading? <Spinner/>: orders}</div>
+    );
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Order);
+
+----------------------------------------------------
+CheckOut.js=>
+----------------------------------------------------
+import React, { useState } from "react";
+import { Button, Modal, ModalBody } from "reactstrap";
+import { connect } from "react-redux";
+import axios from "axios";
+import Spinner from "../../Spinner/Spinner";
+import { resetIngredients } from "../../../redux/actionCreators";
+import { useNavigate } from "react-router-dom";
+
+const mapStateToProps = (state) => {
+  return {
+    ingredients: state.ingredients,
+    totalPrice: state.totalPrice,
+    purchasable: state.purchasable,
+    token: state.token, // last add token
+    userId:state.userId, // last add to show order according to user ID.
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    resetIngredients: () => dispatch(resetIngredients()),
+  };
+};
+
+const CheckOut = (props) => {
+  const [values, setValues] = useState({
+    deliveryAddress: "",
+    phone: "",
+    paymentType: "Cash On Delivery",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModal, setIsModal] = useState(false);
+  const [modalMsg, setModalMsg] = useState("");
+
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    navigate("/", { state: props.ingredients });
+  };
+
+  const inputChangeHandler = (e) => {
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const submitHandler = () => {
+    setIsLoading(true);
+    const order = {
+      ingredients: props.ingredients,
+      price: props.totalPrice,
+      customer: values,
+      orderTime: new Date(),
+      userId:props.userId, // last add this userId.
+    };
+
+    axios
+      .post("https://burgerbuliders-default-rtdb.firebaseio.com/order.json?auth=" + props.token, order) //last edit ...?auth=
+      .then((response) => {
+        if (response.status === 200) {
+          setIsLoading(false);
+          setIsModal(true);
+          setModalMsg("Order Placed Successfully!");
+          props.resetIngredients();
+        } else {
+          setIsLoading(false);
+          setIsModal(true);
+          setModalMsg("Something went Wrong!");
+        }
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setIsModal(true);
+        setModalMsg("Something went Wrong!");
+      });
+  };
+
+  let form = (
+    <div>
+      <h4
+        style={{
+          border: "1px solid grey",
+          boxShadow: "1px 1px #888888",
+          borderRadius: "5px",
+          padding: "20px",
+        }}
+      >
+        {" "}
+        Price:{props.totalPrice} BDT
+      </h4>
+      <form
+        style={{
+          border: "1px solid grey",
+          boxShadow: "1px 1px #888888",
+          borderRadius: "5px",
+          padding: "20px",
+        }}
+      >
+        <textarea
+          name="deliveryAddress"
+          value={values.deliveryAddress}
+          className="form-control"
+          placeholder="Your Address"
+          onChange={inputChangeHandler}
+        ></textarea>
+        <br />
+        <input
+          name="phone"
+          className="form-control"
+          value={values.phone}
+          placeholder="Phone Number"
+          onChange={inputChangeHandler}
+        />
+        <br />
+        <select
+          name="paymentType"
+          value={values.paymentType}
+          className="form-control"
+          onChange={inputChangeHandler}
+        >
+          <option value="Cash On Delivery">Cash On Delivery</option>
+          <option value="Bkash">Bkash</option>
+        </select>
+        <br />
+        <Button
+          style={{ backgroundColor: "#D70F65" }}
+          onClick={submitHandler}
+          disabled={!props.purchasable}
+        >
+          Place Order
+        </Button>
+        <Button className="secondary ms-3" onClick={goBack}>
+          Cancel
+        </Button>
+      </form>
+    </div>
+  );
+
+  return (
+    <div>
+      {isLoading ? <Spinner /> : form}
+      <Modal isOpen={isModal} onClick={goBack}>
+        <ModalBody>{modalMsg}</ModalBody>
+      </Modal>
+    </div>
+  );
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CheckOut);
+
+
+
+// import React, { Component } from "react";
+// import { Button ,Modal,ModalBody} from "reactstrap";
+// import { connect } from "react-redux";
+// import axios from 'axios'
+// import Spinner from "../../Spinner/Spinner";
+// import {resetIngredients } from '../../../redux/actionCreators'
+
+
+
+// const mapStateToProps = (state) => {
+// 	return {
+// 		ingredients: state.ingredients,
+// 		totalPrice: state.totalPrice,
+// 		purchasable: state.purchasable,
+// 	};
+// };
+// const mapDispatchToProps = (dispatch) =>{
+//  return{
+//   resetIngredients:()=>dispatch(resetIngredients()),
+//  }
+
+// }
+
+// class CheckOut extends Component {
+// 	state = {
+// 		values: {
+// 			deliveryAddress: "",
+// 			phone: "",
+// 			paymentType: "Cash On Delivery",
+// 		},
+//     isLoading:false,
+//     isModal:false,
+//     modalMsg:"",
+// 	};
+
+  
+
+// 	goBack = () => {
+// 		// console.log(window.location);
+// 		// window.location.href = "/"; //*** take 2 hourse from my life to fix that issue... */
+//    console.log( this.props)
+// 	};
+
+
+// 	inputChangeHandler = (e) => {
+// 		this.setState({
+// 			values: {
+// 				...this.state.values,
+// 				[e.target.name]: e.target.value,
+// 			},
+// 		});
+// 	};
+// 	//   inputChangeHandler = (e) => {
+// 	//     const { name, value } = e.target;
+// 	//     this.setState((prevState) => ({
+// 	//       values: {
+// 	//         ...prevState.values,
+// 	//         [name]: value,
+// 	//       },
+// 	//     }));
+// 	//   };
+// 	submitHandler = () => {
+//     this.setState({isLoading:true})
+// 		const order = {
+// 			ingredients:this.props.ingredients,
+//       price:this.props.totalPrice,
+//       customer:this.state.values,
+//       orderTime: new Date(), 
+// 		};
+//     axios.post('https://burgerbuliders-default-rtdb.firebaseio.com/order.json',order)
+//     .then(response=>
+//       {
+//         if(response.status===200){
+//           this.setState({
+//             isLoading:false,
+//             isModal:true,
+//             modalMsg:"Order Placed Successfully!",
+//           })
+//           this.props.resetIngredients();
+//         }
+//         else{
+//           this.setState({
+//             isLoading:false,
+//             isModal:true,
+//             modalMsg:"Somethis went Wrong!",
+//           })
+
+//         }
+//       }
+//       )
+//     .catch(err=>{
+//       this.setState({
+//         isLoading:false,
+//         isModal:true,
+//             modalMsg:"Somethis went Wrong!",
+//       })
+//     });
+// 		// console.log(order);
+// 	};
+
+// 	render() {
+// 		// console.log(this.props)
+
+//     let form = (<div>
+//       <h4
+//         style={{
+//           border: "1px solid grey",
+//           boxShadow: "1px 1px #888888",
+//           borderRadius: "5px",
+//           padding: "20px",
+//         }}
+//       >
+//         {" "}
+//         Price:{this.props.totalPrice} BDT
+//       </h4>
+//       <form
+//         style={{
+//           border: "1px solid grey",
+//           boxShadow: "1px 1px #888888",
+//           borderRadius: "5px",
+//           padding: "20px",
+//         }}
+//       >
+//         <textarea
+//           name="deliveryAddress"
+//           value={this.state.values.deliveryAddress}
+//           className="form-control"
+//           placeholder="Your Address"
+//           onChange={(e) => this.inputChangeHandler(e)}
+//         ></textarea>
+//         <br />
+//         <input
+//           name="phone"
+//           className="form-control"
+//           value={this.state.values.phone}
+//           placeholder="Phone Number"
+//           onChange={(e) => this.inputChangeHandler(e)}
+//         />
+//         <br />
+//         <select
+//           name="paymentType"
+//           value={this.state.values.paymentType}
+//           className="form-control"
+//           onChange={(e) => this.inputChangeHandler(e)}
+//         >
+//           <option value="Cash On Delivery">Cash On Delivery</option>
+//           <option value="Bkash">Bkash</option>
+//         </select>
+//         <br />
+//         <Button
+//           style={{ backgroundColor: "#D70F65" }}
+//           onClick={this.submitHandler}
+//           disabled={!this.props.purchasable}
+//         >
+//           Place Order
+//         </Button>
+//         <Button className="secondary ms-3" onClick={this.goBack}>
+//           Cancel
+//         </Button>
+//       </form>
+//     </div>)
+// 		return (
+// 			<div>{this.state.isLoading?<Spinner/>:form}
+//       <Modal isOpen={this.state.isModal} onClick={this.goBack}>
+//         <ModalBody>{this.state.modalMsg}</ModalBody>
+//       </Modal>
+//       </div>
+// 		);
+// 	}
+// }
+
+
+// export default connect(mapStateToProps,mapDispatchToProps)(CheckOut);
+
+----------------------------------------------------
+
+----------------------------------------------------End the Project!!!----------------------------------------------------------------------------------
